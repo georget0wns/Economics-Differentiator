@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AI-powered differentiated lesson planning tool for IGCSE and IBDP Economics teachers. Generate complete units with scaffolding for all ability levels.">
+    <meta name="keywords" content="economics education, differentiated instruction, IGCSE economics, IBDP economics, lesson planning, AI teacher tools">
+    <meta name="author" content="Economics Education Tools">
+    <title>Economics Lesson Differentiator - AI-Powered Unit Planning</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=DM+Sans:wght@400;500;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #1a3a52;
+            --secondary: #d4af37;
+            --accent: #c94b4b;
+            --bg-main: #f8f6f1;
+            --bg-card: #ffffff;
+            --text-primary: #2c3e50;
+            --text-secondary: #546e7a;
+            --border: #e0ddd4;
+            --success: #2e7d32;
+        }
+        
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: linear-gradient(135deg, #f8f6f1 0%, #ede9e0 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, #2c5270 100%);
+            color: white;
+            padding: 40px 0;
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+        }
+        
+        header .container {
+            position: relative;
+            z-index: 1;
+        }
+        
+        h1 {
+            font-family: 'Crimson Pro', serif;
+            font-size: 3em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            letter-spacing: -1px;
+        }
+        
+        .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+        
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border: 1px solid var(--border);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 30px rgba(0,0,0,0.12);
+        }
+        
+        .card h2 {
+            font-family: 'Crimson Pro', serif;
+            font-size: 1.8em;
+            color: var(--primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .icon {
+            width: 32px;
+            height: 32px;
+            background: var(--secondary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+            font-size: 0.95em;
+        }
+        
+        select, textarea, input[type="file"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+            background: white;
+        }
+        
+        select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'DM Sans', sans-serif;
+            box-shadow: 0 4px 12px rgba(201, 75, 75, 0.3);
+        }
+        
+        .btn:hover {
+            background: #b43b3b;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(201, 75, 75, 0.4);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn-secondary {
+            background: var(--primary);
+            box-shadow: 0 4px 12px rgba(26, 58, 82, 0.3);
+        }
+        
+        .btn-secondary:hover {
+            background: #2c5270;
+            box-shadow: 0 6px 20px rgba(26, 58, 82, 0.4);
+        }
+        
+        .file-upload {
+            border: 2px dashed var(--border);
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            background: #fafaf8;
+        }
+        
+        .file-upload:hover {
+            border-color: var(--primary);
+            background: white;
+        }
+        
+        .file-upload.active {
+            border-color: var(--secondary);
+            background: #fffef8;
+        }
+        
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 10px;
+        }
+        
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px;
+            border-radius: 6px;
+            transition: background 0.2s ease;
+            cursor: pointer;
+        }
+        
+        .checkbox-label:hover {
+            background: var(--bg-main);
+        }
+        
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--primary);
+        }
+        
+        #output {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border: 1px solid var(--border);
+            display: none;
+        }
+        
+        #output.active {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .output-section {
+            margin-bottom: 30px;
+            padding-bottom: 30px;
+            border-bottom: 2px solid var(--border);
+        }
+        
+        .output-section:last-child {
+            border-bottom: none;
+        }
+        
+        .output-section h3 {
+            font-family: 'Crimson Pro', serif;
+            color: var(--primary);
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+        
+        .tier-content {
+            background: linear-gradient(135deg, #f9f9f7 0%, #ffffff 100%);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--secondary);
+        }
+        
+        .tier-label {
+            font-weight: 700;
+            color: var(--accent);
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        
+        .spinner {
+            border: 4px solid var(--border);
+            border-top: 4px solid var(--accent);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .info-box {
+            background: linear-gradient(135deg, #e8f4f8 0%, #d4e9f2 100%);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .info-box p {
+            margin: 0;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+        
+        @media (max-width: 968px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2.2em;
+            }
+            
+            .checkbox-group {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media print {
+            header, footer, .btn {
+                display: none;
+            }
+            
+            .card {
+                break-inside: avoid;
+                box-shadow: none;
+                border: 1px solid #000;
+            }
+            
+            body {
+                background: white;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Economics Lesson Differentiator</h1>
+            <p class="subtitle">AI-Powered Differentiation for IGCSE & IBDP Economics</p>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="info-box" style="background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); border-left-color: var(--success); margin-bottom: 30px;">
+            <h3 style="color: var(--success); margin-bottom: 10px; font-family: 'Crimson Pro', serif;">🎓 How to Use This Tool</h3>
+            <p style="margin-bottom: 10px;"><strong>Step 1:</strong> Select your curriculum (IGCSE or IBDP SL/HL)</p>
+            <p style="margin-bottom: 10px;"><strong>Step 2:</strong> Upload your syllabus/textbook content or paste it directly</p>
+            <p style="margin-bottom: 10px;"><strong>Step 3:</strong> Specify the sub-chapter or specific topic to cover</p>
+            <p style="margin-bottom: 10px;"><strong>Step 4:</strong> Add student interests to make examples more engaging (optional)</p>
+            <p style="margin-bottom: 10px;"><strong>Step 5:</strong> Click "Generate Complete Unit" and wait for AI to create your materials</p>
+            <p style="margin-top: 15px; font-size: 0.95em; opacity: 0.9;"><em>The tool will generate 2-5 lessons with all worksheets, assessments, and differentiation materials ready to use!</em></p>
+        </div>
+        
+        <div class="main-grid">
+            <div class="card">
+                <h2><span class="icon">📚</span>Syllabus & Content</h2>
+                
+                <div class="form-group">
+                    <label>Curriculum Type</label>
+                    <select id="curriculum">
+                        <option value="igcse">IGCSE Economics</option>
+                        <option value="ibdp-sl">IBDP Economics SL</option>
+                        <option value="ibdp-hl">IBDP Economics HL</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Upload Syllabus/Textbook Content</label>
+                    <div class="file-upload" id="fileUploadZone">
+                        <p>📄 Drop PDF, DOCX, or TXT files here or click to browse</p>
+                        <input type="file" id="syllabusFile" accept=".pdf,.docx,.txt" style="display: none;">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Or Paste Content Directly</label>
+                    <textarea id="contentInput" placeholder="Paste chapter content, learning objectives, or topic details here..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Sub-Chapter/Specific Topic</label>
+                    <input type="text" id="topicInput" placeholder="e.g., Determinants of PED, Characteristics of Monopolistic Competition" style="width: 100%; padding: 12px 15px; border: 2px solid var(--border); border-radius: 8px;">
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2><span class="icon">🎯</span>Differentiation Settings</h2>
+                
+                <div class="info-box" style="background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%); border-left-color: var(--secondary);">
+                    <p><strong>How the app works:</strong></p>
+                    <p style="margin-top: 8px;">• Generates MULTIPLE lessons (2-5) to fully cover the sub-topic</p>
+                    <p>• Each lesson is 45-50 minutes with differentiation at EVERY stage</p>
+                    <p>• ALL resources provided IN FULL (worksheets, sentence starters, assessments, etc.)</p>
+                    <p>• Foundation (IB 1-3) = scaffolding to complete core tasks</p>
+                    <p>• Extension (IB 6-7) = enrichment after finishing core</p>
+                </div>
+                
+                <div class="form-group">
+                    <label>Select Which Components to Generate</label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="tier" value="core" checked disabled style="cursor: not-allowed;">
+                            Core Lesson (Required - for ALL students)
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="tier" value="foundation" checked>
+                            Foundation Scaffolding (IB 1-3)
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" name="tier" value="extension" checked>
+                            Extension Enrichment (IB 6-7)
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Student Interest Areas (Optional)</label>
+                    <textarea id="interestsInput" placeholder="e.g., Technology startups, environmental sustainability, sports economics, cryptocurrency..."></textarea>
+                </div>
+                
+                <button class="btn" onclick="generateDifferentiation()">Generate Complete Unit</button>
+            </div>
+        </div>
+        
+        <div id="output"></div>
+        
+        <footer style="margin-top: 60px; padding: 40px 0; border-top: 2px solid var(--border); text-align: center;">
+            <div style="max-width: 800px; margin: 0 auto;">
+                <h3 style="font-family: 'Crimson Pro', serif; color: var(--primary); margin-bottom: 15px;">About This Tool</h3>
+                <p style="color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px;">
+                    This AI-powered differentiation tool helps economics teachers create comprehensive, classroom-ready units for IGCSE and IBDP curricula. All materials include scaffolding for foundation students (IB 1-3) and enrichment for extension students (IB 6-7), while maintaining a core curriculum accessible to all.
+                </p>
+                <p style="color: var(--text-secondary); font-size: 0.9em; margin-top: 20px;">
+                    <strong>Note:</strong> This tool requires an Anthropic API key. Generated materials should be reviewed and adapted to your specific classroom context.
+                </p>
+                <p style="color: var(--text-secondary); font-size: 0.85em; margin-top: 30px; opacity: 0.7;">
+                    Powered by Claude AI • Designed for Economics Educators
+                </p>
+            </div>
+        </footer>
+    </div>
+    
+    <script>
+        // File upload handling
+        const fileUploadZone = document.getElementById('fileUploadZone');
+        const fileInput = document.getElementById('syllabusFile');
+        
+        fileUploadZone.addEventListener('click', () => fileInput.click());
+        
+        fileUploadZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            fileUploadZone.classList.add('active');
+        });
+        
+        fileUploadZone.addEventListener('dragleave', () => {
+            fileUploadZone.classList.remove('active');
+        });
+        
+        fileUploadZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            fileUploadZone.classList.remove('active');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+        
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+            }
+        });
+        
+        function handleFile(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                document.getElementById('contentInput').value = e.target.result;
+                fileUploadZone.innerHTML = `<p style="color: var(--success);">✅ File uploaded: <strong>${file.name}</strong></p><p style="font-size: 0.9em; margin-top: 8px; opacity: 0.8;">Content loaded successfully. You can edit it in the text box below.</p>`;
+            };
+            reader.readAsText(file);
+        }
+        
+        async function generateDifferentiation() {
+            const curriculum = document.getElementById('curriculum').value;
+            const content = document.getElementById('contentInput').value;
+            const topic = document.getElementById('topicInput').value;
+            const interests = document.getElementById('interestsInput').value;
+            
+            const selectedTiers = Array.from(document.querySelectorAll('input[name="tier"]:checked'))
+                .map(cb => cb.value);
+            
+            if (!content && !topic) {
+                alert('⚠️ Please provide either:\n\n• Content by uploading a file or pasting text, OR\n• A specific sub-chapter/topic name\n\nExample topics: "Determinants of PED", "Characteristics of Perfect Competition"');
+                return;
+            }
+            
+            const output = document.getElementById('output');
+            output.classList.add('active');
+            output.innerHTML = '<div class="loading"><div class="spinner"></div><p>Generating complete differentiated unit with all resources...</p></div>';
+            
+            // Build comprehensive prompt
+            const systemPrompt = `You are an expert economics educator specializing in differentiated instruction for ${curriculum.toUpperCase()}. 
+
+CRITICAL: You are creating a COMPLETE UNIT for a sub-topic with MULTIPLE 45-50 minute lessons:
+- Determine how many lessons are needed to fully cover the sub-topic (typically 2-5 lessons)
+- For EACH lesson, show differentiation at EACH stage (starter, main, assessment, plenary)
+- ALL students do the SAME core activity at the SAME time
+- Foundation students (IB 1-3) get scaffolding/support to help them complete the core activity
+- Extension students (IB 6-7) get additional challenges AFTER completing the core activity
+
+PROVIDE ALL RESOURCES DIRECTLY:
+- Write out full sentence starters, vocabulary lists, graphic organizers
+- Provide complete worked examples with solutions
+- Include full text of real-world case studies/articles
+- Write out all worksheets, assessment questions with marking schemes
+- Provide step-by-step guides word-for-word
+- For diagrams: Note "[TEXTBOOK SCREENSHOT: specific diagram from page X]" but also describe what it shows
+
+DO NOT just reference or mention resources - ACTUALLY CREATE THEM in full.
+
+Your materials are practical, classroom-ready, and emphasize real-world application over pure theory.`;
+
+            const userPrompt = `Create a complete differentiated unit for the following sub-chapter:
+
+CURRICULUM: ${curriculum.toUpperCase()}
+SUB-CHAPTER/TOPIC: ${topic || 'Based on provided content'}
+STUDENT INTERESTS: ${interests || 'General economics applications'}
+
+CONTENT TO DIFFERENTIATE:
+${content}
+
+First, determine how many 45-50 minute lessons are needed to fully cover this sub-topic (typically 2-5 lessons).
+
+Then, for EACH LESSON, provide:
+
+---
+
+# LESSON [NUMBER]: [Lesson Title]
+
+## LESSON OVERVIEW
+**Learning Objectives:**
+- All students will: [core objective]
+- Foundation support (IB 1-3): [how to help them reach it]
+- Extension challenge (IB 6-7): [how to push them further]
+
+---
+
+## STARTER ACTIVITY (5-10 min)
+
+**Core Activity:** [main starter for all students - write out full instructions]
+
+**Foundation Differentiation (IB 1-3):** 
+[Provide actual scaffolding materials]:
+- Sentence starters: [write them out in full, e.g., "I think ___ because ___"]
+- Visual prompts: [describe or provide text of prompts]
+- Questions to guide: [write actual questions]
+
+**Extension Differentiation (IB 6-7):** 
+[Provide actual challenge]:
+- [Write out the full question/task they should do]
+
+---
+
+## MAIN ACTIVITY (25-30 min)
+
+**Core Activity:** [Describe the main task AND provide the full worksheet/materials]
+
+**WORKSHEET/MATERIALS (for all students):**
+[Provide the actual worksheet content, questions, case study text, etc.]
+${interests ? `[Include real-world examples from ${interests}]` : ''}
+
+**Foundation Differentiation (IB 1-3):** 
+[Provide actual support materials]:
+- Vocabulary list: [write out terms with definitions]
+- Sentence frames: [provide actual sentence frames they can use]
+- Step-by-step guide: [write out each step]
+- Graphic organizer: [describe structure or provide template text]
+- Worked example: [provide a complete worked example with solution]
+
+**Extension Differentiation (IB 6-7):** 
+[Provide actual extension materials]:
+- Advanced question: [write out the full question]
+- Case study: [provide full text of a more complex case]
+- Analysis task: [write out complete task]
+
+**Diagrams Needed:**
+- [TEXTBOOK SCREENSHOT: specific diagram name/page] - shows [describe what diagram illustrates]
+
+---
+
+## ASSESSMENT TASK (10 min)
+
+**Core Task:** [Write out the complete assessment questions all students answer]
+
+**ASSESSMENT QUESTIONS:**
+1. [Full question text]
+2. [Full question text]
+3. [Full question text]
+
+**MARKING SCHEME:**
+[Provide complete marking criteria for each question]
+
+**Foundation Differentiation (IB 1-3):** 
+[Provide actual scaffolding]:
+- Sentence starters for answers: [write them out]
+- Word bank: [provide actual words]
+- Simplified question format: [rewrite questions with simpler language]
+
+**Extension Differentiation (IB 6-7):** 
+[Provide actual extension]:
+- Additional question: [write out full question]
+- Success criteria for extension: [provide criteria]
+
+---
+
+## PLENARY (5 min)
+
+**Core Activity:** [Write out what all students do]
+
+**Foundation Differentiation (IB 1-3):** 
+- Prompts: [write actual prompts they can use]
+
+**Extension Differentiation (IB 6-7):** 
+- Reflection question: [write out the question]
+
+---
+
+REPEAT THIS FORMAT FOR EACH LESSON IN THE UNIT.
+
+CRITICAL: Do not just MENTION resources - WRITE THEM OUT IN FULL. Teachers should be able to copy-paste directly into their lesson.`;
+
+            try {
+                const response = await fetch('https://api.anthropic.com/v1/messages', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        model: 'claude-sonnet-4-20250514',
+                        max_tokens: 8000,
+                        system: systemPrompt,
+                        messages: [{
+                            role: 'user',
+                            content: userPrompt
+                        }]
+                    })
+                });
+                
+                const data = await response.json();
+                const generatedContent = data.content[0].text;
+                
+                displayResults(generatedContent, selectedTiers, curriculum, topic);
+                
+            } catch (error) {
+                output.innerHTML = `<div class="info-box" style="background: #ffe8e8; border-left-color: var(--accent);">
+                    <p><strong>⚠️ Error generating materials:</strong></p>
+                    <p style="margin-top: 10px;">${error.message}</p>
+                    <p style="margin-top: 15px;"><strong>Common issues:</strong></p>
+                    <ul style="margin-top: 10px; padding-left: 20px;">
+                        <li>Make sure you have set up API access in your browser</li>
+                        <li>Check that your topic and content are clearly specified</li>
+                        <li>Try simplifying your input if the content is too long</li>
+                    </ul>
+                    <p style="margin-top: 15px;"><em>If problems persist, refresh the page and try again.</em></p>
+                </div>`;
+            }
+        }
+        
+        function displayResults(content, tiers, curriculum, topic) {
+            const output = document.getElementById('output');
+            
+            const sections = content.split(/(?=#{1,3}\s)/);
+            
+            let html = `
+                <div class="output-section">
+                    <h3>📋 ${curriculum.toUpperCase()} - ${topic || 'Differentiated Unit'}</h3>
+                    <div class="info-box">
+                        <p><strong>Complete Unit:</strong> Multiple 45-50 min lessons with all resources provided in full</p>
+                        <p style="margin-top: 8px;"><em>Worksheets, sentence starters, assessments, and all materials are ready to copy-paste and use.</em></p>
+                    </div>
+                </div>
+            `;
+            
+            // Format the content with better lesson and resource highlighting
+            const formattedContent = content
+                .replace(/#{1}\s*LESSON \d+[^\n]*/gi, '<div class="tier-content" style="border-left-color: var(--secondary); background: linear-gradient(135deg, #fffbf0 0%, #ffffff 100%); border: 2px solid var(--secondary); margin-top: 30px;"><div class="tier-label" style="color: var(--secondary); font-size: 1.2em;">📚 $&</div>')
+                .replace(/#{2}\s*(STARTER ACTIVITY|MAIN ACTIVITY|ASSESSMENT TASK|PLENARY|LESSON OVERVIEW)[^\n]*/gi, '</div><div class="tier-content" style="border-left-color: var(--primary); background: linear-gradient(135deg, #e3f2fd 0%, #ffffff 100%); margin-top: 20px;"><div class="tier-label" style="color: var(--primary);">📘 $1</div>')
+                .replace(/\*\*WORKSHEET\/MATERIALS[^\n]*\*\*/gi, '<div style="background: #f0f7ff; padding: 15px; border-radius: 8px; margin: 15px 0; border: 2px dashed var(--primary);"><strong style="color: var(--primary); font-size: 1.1em;">📝 WORKSHEET/MATERIALS</strong>')
+                .replace(/\*\*ASSESSMENT QUESTIONS[^\n]*\*\*/gi, '<div style="background: #fff3e0; padding: 15px; border-radius: 8px; margin: 15px 0; border: 2px dashed #ff9800;"><strong style="color: #ff9800; font-size: 1.1em;">✍️ ASSESSMENT QUESTIONS</strong>')
+                .replace(/\*\*MARKING SCHEME[^\n]*\*\*/gi, '<div style="background: #f3e5f5; padding: 15px; border-radius: 8px; margin: 15px 0; border: 2px dashed #9c27b0;"><strong style="color: #9c27b0; font-size: 1.1em;">✓ MARKING SCHEME</strong>')
+                .replace(/\*\*Core Activity:\*\*/gi, '<strong style="color: var(--primary);">🎯 Core Activity:</strong>')
+                .replace(/\*\*Foundation Differentiation[^\n]*\*\*/gi, '<strong style="color: #2e7d32;">🛟 Foundation Differentiation (IB 1-3):</strong>')
+                .replace(/\*\*Extension Differentiation[^\n]*\*\*/gi, '<strong style="color: var(--accent);">🚀 Extension Differentiation (IB 6-7):</strong>')
+                .replace(/\[TEXTBOOK SCREENSHOT: ([^\]]+)\]/gi, '<div style="background: #fff3e0; padding: 12px; border-radius: 6px; margin: 10px 0; border-left: 3px solid #ff9800;"><strong>📷 Diagram Needed:</strong> $1</div>')
+                .replace(/#{3}\s*([^\n]+)/g, '<h4 style="color: var(--text-primary); margin-top: 15px;">$1</h4>')
+                .replace(/#{2}\s*([^\n]+)/g, '<h3>$1</h3>')
+                .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+                .replace(/\n\n/g, '</p><p>')
+                .replace(/^(?!<)/gm, '<p>')
+                .replace(/(?<!>)$/gm, '</p>') + '</div></div>';
+            
+            html += `<div class="output-section">${formattedContent}</div></div>`;
+            
+            html += `
+                <div style="margin-top: 30px; text-align: center;">
+                    <button class="btn btn-secondary" onclick="downloadMaterials()">📥 Download Complete Unit</button>
+                    <button class="btn" onclick="generateDifferentiation()" style="margin-left: 15px;">🔄 Generate New Unit</button>
+                </div>
+            `;
+            
+            output.innerHTML = html;
+            
+            // Smooth scroll to results
+            output.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        
+        function downloadMaterials() {
+            const output = document.getElementById('output');
+            const curriculum = document.getElementById('curriculum').value.toUpperCase();
+            const topic = document.getElementById('topicInput').value || 'economics-unit';
+            const safeTopic = topic.replace(/[^a-z0-9]/gi, '-').toLowerCase();
+            const content = output.innerText;
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${curriculum}-${safeTopic}-differentiated-unit.txt`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
